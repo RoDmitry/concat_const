@@ -1,30 +1,28 @@
 pub const fn concat<const LEN: usize>(to_concat: &[&[u8]]) -> [u8; LEN] {
     let mut res: [u8; LEN] = [0; LEN];
-    let mut i;
-    let mut z = 0;
     let mut shift = 0;
-    while z < to_concat.len() {
-        let to_concat_one = to_concat[z];
-        let len = to_concat_one.len();
-        i = 0;
-        while i < len {
-            res[shift + i] = to_concat_one[i];
-            i += 1;
+    let mut i = 0;
+    while i < to_concat.len() {
+        let to_concat_one = to_concat[i];
+        let mut j = 0;
+        while j < to_concat_one.len() {
+            res[j + shift] = to_concat_one[j];
+            j += 1;
         }
-        shift += i;
-        z += 1;
+        shift += j;
+        i += 1;
     }
     res
 }
 
 pub const fn len_sum(to_concat: &[&[u8]]) -> usize {
-    let mut res = 0;
+    let mut len = 0;
     let mut i = 0;
     while i < to_concat.len() {
-        res += to_concat[i].len();
+        len += to_concat[i].len();
         i += 1;
     }
-    res
+    len
 }
 
 #[cfg(test)]
@@ -32,28 +30,21 @@ mod tests {
     #[test]
     fn top_level_constants() {
         const HELLO: &str = "Hello";
-        const COMMA: &str = ", ";
-        const WORLD: &str = "world";
-        const DOT: &str = ".";
-
         const HELLO_BYTES: &[u8] = HELLO.as_bytes();
-        const COMMA_BYTES: &[u8] = COMMA.as_bytes();
-        const WORLD_BYTES: &[u8] = WORLD.as_bytes();
-        const DOT_BYTES: &[u8] = DOT.as_bytes();
 
-        const TO_CONCAT2: &[&[u8]] = &[HELLO_BYTES, WORLD_BYTES];
+        const TO_CONCAT2: &[&[u8]] = &[HELLO_BYTES, b"world"];
         const LEN2: usize = crate::len_sum(TO_CONCAT2);
         const GREETING2: [u8; LEN2] = crate::concat(TO_CONCAT2);
 
-        const TO_CONCAT3: &[&[u8]] = &[HELLO_BYTES, COMMA_BYTES, WORLD_BYTES];
+        const TO_CONCAT3: &[&[u8]] = &[HELLO_BYTES, b", ", b"world"];
         const LEN3: usize = crate::len_sum(TO_CONCAT3);
         const GREETING3: [u8; LEN3] = crate::concat(TO_CONCAT3);
 
-        const TO_CONCAT4: &[&[u8]] = &[HELLO_BYTES, COMMA_BYTES, WORLD_BYTES, DOT_BYTES];
+        const TO_CONCAT4: &[&[u8]] = &[HELLO_BYTES, b", ", b"world", b"."];
         const LEN4: usize = crate::len_sum(TO_CONCAT4);
         const GREETING4: [u8; LEN4] = crate::concat(TO_CONCAT4);
 
-        const TO_CONCAT6: &[&[u8]] = &[HELLO_BYTES, COMMA_BYTES, WORLD_BYTES, DOT_BYTES, b" ", b"end"];
+        const TO_CONCAT6: &[&[u8]] = &[b"Hello", b", ", b"world", b".", b" ", b"end"];
         const LEN6: usize = crate::len_sum(TO_CONCAT6);
         const GREETING6: [u8; LEN6] = crate::concat(TO_CONCAT6);
 
