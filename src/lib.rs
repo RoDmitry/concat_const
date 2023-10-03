@@ -17,17 +17,14 @@ pub const fn concat<const LEN: usize>(to_concat: &[&[u8]]) -> [u8; LEN] {
     res
 }
 
-#[macro_export]
-macro_rules! len_sum {
-    ($a:expr) => {
-        $a.len()
-    };
-    ($a:expr, $($rest:expr),*) => {
-        len_sum!($a) + len_sum!($($rest),*)
-    };
-    ($a:expr, $($rest:expr),*,) => {
-        len_sum!($a, $($rest),*)
-    };
+pub const fn len_sum(to_concat: &[&[u8]]) -> usize {
+    let mut res = 0;
+    let mut i = 0;
+    while i < to_concat.len() {
+        res += to_concat[i].len();
+        i += 1;
+    }
+    res
 }
 
 #[cfg(test)]
@@ -44,15 +41,18 @@ mod tests {
         const WORLD_BYTES: &[u8] = WORLD.as_bytes();
         const DOT_BYTES: &[u8] = DOT.as_bytes();
 
-        const GREETING2_LEN: usize = len_sum!(HELLO_BYTES, WORLD_BYTES);
-        const GREETING3_LEN: usize = len_sum!(HELLO_BYTES, COMMA_BYTES, WORLD_BYTES);
-        const GREETING4_LEN: usize = len_sum!(HELLO_BYTES, COMMA_BYTES, WORLD_BYTES, DOT_BYTES);
+        const TO_CONCAT2: &[&[u8]] = &[HELLO_BYTES, WORLD_BYTES];
+        const LEN2: usize = crate::len_sum(TO_CONCAT2);
+        const GREETING2: [u8; LEN2] = crate::concat(TO_CONCAT2);
 
-        const GREETING2: [u8; GREETING2_LEN] = crate::concat(&[HELLO_BYTES, WORLD_BYTES]);
-        const GREETING3: [u8; GREETING3_LEN] =
-            crate::concat(&[HELLO_BYTES, COMMA_BYTES, WORLD_BYTES]);
-        const GREETING4: [u8; GREETING4_LEN] =
-            crate::concat(&[HELLO_BYTES, COMMA_BYTES, WORLD_BYTES, DOT_BYTES]);
+        const TO_CONCAT3: &[&[u8]] = &[HELLO_BYTES, COMMA_BYTES, WORLD_BYTES];
+        const LEN3: usize = crate::len_sum(TO_CONCAT3);
+        const GREETING3: [u8; LEN3] = crate::concat(TO_CONCAT3);
+
+        const TO_CONCAT4: &[&[u8]] = &[HELLO_BYTES, COMMA_BYTES, WORLD_BYTES, DOT_BYTES];
+        const LEN4: usize = crate::len_sum(TO_CONCAT4);
+        const GREETING4: [u8; LEN4] = crate::concat(TO_CONCAT4);
+
         assert_eq!(&GREETING2, b"Helloworld");
         assert_eq!(&GREETING3, b"Hello, world");
         assert_eq!(&GREETING4, b"Hello, world.");
