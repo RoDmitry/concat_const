@@ -31,8 +31,7 @@ macro_rules! concat {
         const TO_CONCAT: &[&[u8]] = &[$($rest.as_bytes()),*];
         const LEN: usize = $crate::len_sum(TO_CONCAT);
         const RES: [u8; LEN] = $crate::concat_bytes(TO_CONCAT);
-        const RES_STR: &str = unsafe { core::str::from_utf8_unchecked(&RES) };
-        RES_STR
+        unsafe { core::str::from_utf8_unchecked(&RES) }
     }};
     ($($rest:expr),*,) => {
         concat!($($rest),*)
