@@ -31,7 +31,7 @@ macro_rules! concat {
         const TO_CONCAT: &[&[u8]] = &[$($rest.as_bytes()),*];
         const LEN: usize = $crate::len_sum(TO_CONCAT);
         const RES: [u8; LEN] = $crate::concat_bytes(TO_CONCAT);
-        unsafe { core::str::from_utf8_unchecked(&RES) }
+        unsafe { ::core::str::from_utf8_unchecked(&RES) }
     }};
     ($($rest:expr),*,) => {
         concat!($($rest),*)
@@ -83,10 +83,10 @@ mod tests {
         assert_eq!(&GREETING4, b"Hello, world.");
         assert_eq!(&GREETING6, b"Hello, world. end");
 
-        const GREETING2_STR: &str = unsafe { core::str::from_utf8_unchecked(&GREETING2) };
-        const GREETING3_STR: &str = unsafe { core::str::from_utf8_unchecked(&GREETING3) };
-        const GREETING4_STR: &str = unsafe { core::str::from_utf8_unchecked(&GREETING4) };
-        const GREETING6_STR: &str = unsafe { core::str::from_utf8_unchecked(&GREETING6) };
+        const GREETING2_STR: &str = unsafe { ::core::str::from_utf8_unchecked(&GREETING2) };
+        const GREETING3_STR: &str = unsafe { ::core::str::from_utf8_unchecked(&GREETING3) };
+        const GREETING4_STR: &str = unsafe { ::core::str::from_utf8_unchecked(&GREETING4) };
+        const GREETING6_STR: &str = unsafe { ::core::str::from_utf8_unchecked(&GREETING6) };
         assert_eq!(GREETING2_STR, "Helloworld");
         assert_eq!(GREETING3_STR, "Hello, world");
         assert_eq!(GREETING4_STR, "Hello, world.");
