@@ -6,6 +6,7 @@ description = "const `&[u8]` and `&str` concatenation"
 repository = "https://github.com/RoDmitry/concat_const"
 documentation = "https://docs.rs/concat_const/"
 keywords = ["concat", "concatenate", "const"]
+categories = ["no-std"]
 readme = "README.md"
 license = "MIT OR Apache-2.0"
 edition = "2021"

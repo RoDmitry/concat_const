@@ -1,3 +1,5 @@
+#![no_std]
+
 pub const fn len_sum(to_concat: &[&[u8]]) -> usize {
     let mut len = 0;
     let mut i = 0;
