@@ -38,9 +38,71 @@ macro_rules! concat {
     };
 }
 
+pub const fn int_len(mut int: i128) -> usize {
+    let mut len = 0;
+    if int < 0 {
+        int = -int;
+        len = 1;
+    }
+    while int > 0 {
+        int /= 10;
+        len += 1;
+    }
+    len
+}
+
+pub const fn int_to_bytes<const LEN: usize>(mut int: i128) -> [u8; LEN] {
+    let mut res: [u8; LEN] = [0; LEN];
+    if int < 0 {
+        res[0] = b'-';
+        int = -int;
+    }
+    let mut i = LEN - 1;
+    while int > 0 {
+        res[i] = (int % 10) as u8 | 0x30;
+        int /= 10;
+        i = i.saturating_sub(1);
+    }
+
+    res
+}
+
+#[allow(dead_code)]
+struct BytesWrapper<const LEN: usize>([u8; LEN]);
+impl<const LEN: usize> BytesWrapper<LEN> {
+    #[allow(dead_code)]
+    const fn as_bytes(&'static self) -> &'static [u8] {
+        &self.0
+    }
+}
+
+#[macro_export]
+macro_rules! int {
+    ($a:expr) => {{
+        const LEN: usize = $crate::int_len($a);
+        const RES: [u8; LEN] = $crate::int_to_bytes($a);
+        BytesWrapper::<LEN>(RES)
+    }};
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_int_len() {
+        assert_eq!(int_len(-123_i128), 4);
+        assert_eq!(int_len(23_i128), 2);
+    }
+
+    #[test]
+    fn test_int_to_bytes() {
+        const VAR: [u8; 4] = int_to_bytes(-123_i128);
+        assert_eq!(&VAR, b"-123");
+
+        const VAR2: [u8; 2] = int_to_bytes(54_i128);
+        assert_eq!(&VAR2, b"54");
+    }
 
     #[test]
     fn test_str() {
@@ -50,11 +112,15 @@ mod tests {
         const GREETING3: &str = concat!(HELLO, ", ", "world");
         const GREETING4: &str = concat!(HELLO, ", ", "world", ".");
         const GREETING6: &str = concat!("Hello", ", ", "world", ".", " ", "end");
+        const GREETING3_2: &str = concat!("Hello", "world", int!(1));
+        const GREETING4_1: &str = concat!("Hello", "world", int!(-54), int!(32),);
 
         assert_eq!(GREETING2, "Helloworld");
         assert_eq!(GREETING3, "Hello, world");
         assert_eq!(GREETING4, "Hello, world.");
         assert_eq!(GREETING6, "Hello, world. end");
+        assert_eq!(GREETING3_2, "Helloworld1");
+        assert_eq!(GREETING4_1, "Helloworld-5432");
     }
 
     #[test]
