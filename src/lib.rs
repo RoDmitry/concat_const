@@ -69,11 +69,9 @@ pub const fn int_to_bytes<const LEN: usize>(mut int: i128) -> [u8; LEN] {
     res
 }
 
-#[allow(dead_code)]
-struct BytesWrapper<const LEN: usize>([u8; LEN]);
+pub struct BytesWrapper<const LEN: usize>([u8; LEN]);
 impl<const LEN: usize> BytesWrapper<LEN> {
-    #[allow(dead_code)]
-    const fn as_bytes(&'static self) -> &'static [u8] {
+    pub const fn as_bytes(&'static self) -> &'static [u8] {
         &self.0
     }
 }
@@ -82,8 +80,7 @@ impl<const LEN: usize> BytesWrapper<LEN> {
 macro_rules! int {
     ($a:expr) => {{
         const LEN: usize = $crate::int_len($a);
-        const RES: [u8; LEN] = $crate::int_to_bytes($a);
-        BytesWrapper::<LEN>(RES)
+        $crate::BytesWrapper::<LEN>($crate::int_to_bytes($a))
     }};
 }
 
