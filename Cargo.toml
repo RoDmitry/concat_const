@@ -1,6 +1,6 @@
 [package]
 name = "concat_const"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Dmitry Rodionov <gh@rdmtr.com>"]
 description = "const `&[u8]` and `&str` concatenation"
 repository = "https://github.com/RoDmitry/concat_const"
