@@ -43,10 +43,9 @@ macro_rules! concat {
 pub const fn int_len(mut int: i128) -> usize {
     let mut len = 0;
     if int < 0 {
-        int = -int;
         len = 1;
     }
-    while int > 0 {
+    while int != 0 {
         int /= 10;
         len += 1;
     }
@@ -55,11 +54,13 @@ pub const fn int_len(mut int: i128) -> usize {
 
 pub const fn int_to_bytes<const LEN: usize>(mut int: i128) -> [u8; LEN] {
     let mut res: [u8; LEN] = [0; LEN];
+    let mut i = LEN - 1;
     if int < 0 {
         res[0] = b'-';
-        int = -int;
+        res[i] = -(int % 10) as u8 | 0x30;
+        int /= -10;
+        i = i.saturating_sub(1);
     }
-    let mut i = LEN - 1;
     while int > 0 {
         res[i] = (int % 10) as u8 | 0x30;
         int /= 10;
@@ -92,6 +93,7 @@ mod tests {
     fn test_int_len() {
         assert_eq!(int_len(-123_i128), 4);
         assert_eq!(int_len(23_i128), 2);
+        assert_eq!(int_len(i128::MIN), 40);
     }
 
     #[test]
@@ -101,6 +103,9 @@ mod tests {
 
         const VAR2: [u8; 2] = int_to_bytes(54_i128);
         assert_eq!(&VAR2, b"54");
+
+        const VAR3: [u8; 40] = int_to_bytes(i128::MIN);
+        assert_eq!(&VAR3, b"-170141183460469231731687303715884105728");
     }
 
     #[test]
