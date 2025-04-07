@@ -30,12 +30,22 @@ pub const fn concat_bytes<const LEN: usize>(to_concat: &[&[u8]]) -> [u8; LEN] {
 }
 
 #[macro_export]
+macro_rules! concat_bytes {
+    ($($rest:expr),*) => {{
+        const TO_CONCAT: &[&[u8]] = &[$($rest),*];
+        const LEN: usize = $crate::len_sum(TO_CONCAT);
+        &$crate::concat_bytes::<LEN>(TO_CONCAT)
+    }};
+    ($($rest:expr),*,) => {
+        $crate::concat_bytes!($($rest),*)
+    };
+}
+
+#[macro_export]
 macro_rules! concat {
     ($($rest:expr),*) => {{
-        const TO_CONCAT: &[&[u8]] = &[$($rest.as_bytes()),*];
-        const LEN: usize = $crate::len_sum(TO_CONCAT);
-        const RES: [u8; LEN] = $crate::concat_bytes(TO_CONCAT);
-        unsafe { ::core::str::from_utf8_unchecked(&RES) }
+        const RES: &[u8] = $crate::concat_bytes!($($rest.as_bytes()),*);
+        unsafe { ::core::str::from_utf8_unchecked(RES) }
     }};
     ($($rest:expr),*,) => {
         $crate::concat!($($rest),*)
@@ -74,8 +84,8 @@ pub const fn int_to_bytes<const LEN: usize>(mut int: i128) -> [u8; LEN] {
     res
 }
 
-pub struct BytesWrapper<const LEN: usize>(pub [u8; LEN]);
-impl<const LEN: usize> BytesWrapper<LEN> {
+pub struct BytesWrapper(pub &'static [u8]);
+impl BytesWrapper {
     #[inline]
     pub const fn as_bytes(&'static self) -> &'static [u8] {
         &self.0
@@ -83,18 +93,22 @@ impl<const LEN: usize> BytesWrapper<LEN> {
 }
 
 #[macro_export]
-macro_rules! int {
+macro_rules! int_bytes {
     ($a:expr) => {{
         const LEN: usize = $crate::int_len($a);
-        $crate::BytesWrapper::<LEN>($crate::int_to_bytes($a))
+        &$crate::int_to_bytes::<LEN>($a)
+    }};
+}
+
+#[macro_export]
+macro_rules! int {
+    ($a:expr) => {{
+        $crate::BytesWrapper($crate::int_bytes!($a))
     }};
 }
 
 #[inline]
-pub const fn eq_str(ref left: &str, right: &str) -> bool {
-    let left = left.as_bytes();
-    let right = right.as_bytes();
-
+pub const fn eq_bytes(ref left: &[u8], right: &[u8]) -> bool {
     if left.len() != right.len() {
         return false;
     }
@@ -108,4 +122,9 @@ pub const fn eq_str(ref left: &str, right: &str) -> bool {
     }
 
     true
+}
+
+#[inline]
+pub const fn eq_str(ref left: &str, right: &str) -> bool {
+    eq_bytes(left.as_bytes(), right.as_bytes())
 }
