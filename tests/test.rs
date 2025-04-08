@@ -20,56 +20,50 @@ fn test_int_to_bytes() {
 }
 
 #[test]
-fn test_str() {
-    const HELLO: &str = "Hello";
-
-    const GREETING2: &str = concat_const::concat!(HELLO, "world",); // trailing comma
-    const GREETING3: &str = concat_const::concat!(HELLO, ", ", "world");
-    const GREETING4: &str = concat_const::concat!(HELLO, ", ", "world", ".");
-    const GREETING6: &str = concat_const::concat!("Hello", ", ", "world", ".", " ", "end");
-    const GREETING3_2: &str = concat_const::concat!("Hello", "world", int!(1));
-    const GREETING4_1: &str = concat_const::concat!("Hello", "world", int!(-54), int!(32),);
-
-    assert_eq!(GREETING2, "Helloworld");
-    assert_eq!(GREETING3, "Hello, world");
-    assert_eq!(GREETING4, "Hello, world.");
-    assert_eq!(GREETING6, "Hello, world. end");
-    assert_eq!(GREETING3_2, "Helloworld1");
-    assert_eq!(GREETING4_1, "Helloworld-5432");
-}
-
-#[test]
 fn test_bytes() {
     const HELLO: &[u8] = b"Hello";
 
-    const GREETING2: &[u8] = concat_const::concat_bytes!(HELLO, b"world",); // trailing comma
-    const GREETING3: &[u8] = concat_const::concat_bytes!(HELLO, b", ", b"world");
-    const GREETING4: &[u8] = concat_const::concat_bytes!(HELLO, b", ", b"world", b".");
-    const GREETING6: &[u8] =
-        concat_const::concat_bytes!(b"Hello", b", ", b"world", b".", b" ", b"end");
-    const GREETING3_2: &[u8] = concat_const::concat_bytes!(b"Hello", b"world", int_bytes!(1));
-    const GREETING4_1: &[u8] =
+    const RES1: &[u8] = concat_const::concat_bytes!(HELLO, b"world",); // trailing comma
+    assert_eq!(RES1, b"Helloworld");
+
+    const RES2: &[u8] = concat_const::concat_bytes!(HELLO, b", ", b"world");
+    assert_eq!(RES2, b"Hello, world");
+
+    const RES3: &[u8] = concat_const::concat_bytes!(HELLO, b", ", b"world", b".");
+    assert_eq!(RES3, b"Hello, world.");
+
+    const RES4: &[u8] = concat_const::concat_bytes!(b"Hello", b", ", b"world", b".", b" ", b"end");
+    assert_eq!(RES4, b"Hello, world. end");
+
+    const RES5: &[u8] = concat_const::concat_bytes!(b"Hello", b"world", int_bytes!(1));
+    assert_eq!(RES5, b"Helloworld1");
+
+    const RES6: &[u8] =
         concat_const::concat_bytes!(b"Hello", b"world", int_bytes!(-54), int_bytes!(32),);
+    assert_eq!(RES6, b"Helloworld-5432");
+}
 
-    assert_eq!(GREETING2, b"Helloworld");
-    assert_eq!(GREETING3, b"Hello, world");
-    assert_eq!(GREETING4, b"Hello, world.");
-    assert_eq!(GREETING6, b"Hello, world. end");
-    assert_eq!(GREETING3_2, b"Helloworld1");
-    assert_eq!(GREETING4_1, b"Helloworld-5432");
+#[test]
+fn test_str() {
+    const HELLO: &str = "Hello";
 
-    const GREETING2_STR: &str = unsafe { ::core::str::from_utf8_unchecked(&GREETING2) };
-    const GREETING3_STR: &str = unsafe { ::core::str::from_utf8_unchecked(&GREETING3) };
-    const GREETING4_STR: &str = unsafe { ::core::str::from_utf8_unchecked(&GREETING4) };
-    const GREETING6_STR: &str = unsafe { ::core::str::from_utf8_unchecked(&GREETING6) };
-    const GREETING3_2_STR: &str = unsafe { ::core::str::from_utf8_unchecked(&GREETING3_2) };
-    const GREETING4_1_STR: &str = unsafe { ::core::str::from_utf8_unchecked(&GREETING4_1) };
-    assert_eq!(GREETING2_STR, "Helloworld");
-    assert_eq!(GREETING3_STR, "Hello, world");
-    assert_eq!(GREETING4_STR, "Hello, world.");
-    assert_eq!(GREETING6_STR, "Hello, world. end");
-    assert_eq!(GREETING3_2_STR, "Helloworld1");
-    assert_eq!(GREETING4_1_STR, "Helloworld-5432");
+    const RES1: &str = concat_const::concat!(HELLO, "world",); // trailing comma
+    assert_eq!(RES1, "Helloworld");
+
+    const RES2: &str = concat_const::concat!(HELLO, ", ", "world");
+    assert_eq!(RES2, "Hello, world");
+
+    const RES3: &str = concat_const::concat!(HELLO, ", ", "world", ".");
+    assert_eq!(RES3, "Hello, world.");
+
+    const RES4: &str = concat_const::concat!("Hello", ", ", "world", ".", " ", "end");
+    assert_eq!(RES4, "Hello, world. end");
+
+    const RES5: &str = concat_const::concat!("Hello", "world", int!(1));
+    assert_eq!(RES5, "Helloworld1");
+
+    const RES6: &str = concat_const::concat!("Hello", "world", int!(-54), int!(32),);
+    assert_eq!(RES6, "Helloworld-5432");
 }
 
 #[test]
