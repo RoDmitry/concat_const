@@ -88,7 +88,7 @@ pub struct BytesWrapper(pub &'static [u8]);
 impl BytesWrapper {
     #[inline]
     pub const fn as_bytes(&'static self) -> &'static [u8] {
-        &self.0
+        self.0
     }
 }
 
@@ -108,7 +108,7 @@ macro_rules! int {
 }
 
 #[inline]
-pub const fn eq_bytes(ref left: &[u8], right: &[u8]) -> bool {
+pub const fn eq_bytes(left: &[u8], right: &[u8]) -> bool {
     if left.len() != right.len() {
         return false;
     }
@@ -125,6 +125,6 @@ pub const fn eq_bytes(ref left: &[u8], right: &[u8]) -> bool {
 }
 
 #[inline]
-pub const fn eq_str(ref left: &str, right: &str) -> bool {
+pub const fn eq_str(left: &str, right: &str) -> bool {
     eq_bytes(left.as_bytes(), right.as_bytes())
 }

@@ -22,6 +22,7 @@ fn test_int_to_bytes() {
 #[test]
 fn test_bytes() {
     const HELLO: &[u8] = b"Hello";
+    const NUM: i128 = 1;
 
     const RES1: &[u8] = concat_const::concat_bytes!(HELLO, b"world",); // trailing comma
     assert_eq!(RES1, b"Helloworld");
@@ -32,20 +33,21 @@ fn test_bytes() {
     const RES3: &[u8] = concat_const::concat_bytes!(HELLO, b", ", b"world", b".");
     assert_eq!(RES3, b"Hello, world.");
 
-    const RES4: &[u8] = concat_const::concat_bytes!(b"Hello", b", ", b"world", b".", b" ", b"end");
+    const RES4: &[u8] = concat_const::concat_bytes!(HELLO, b", ", b"world", b".", b" ", b"end");
     assert_eq!(RES4, b"Hello, world. end");
 
-    const RES5: &[u8] = concat_const::concat_bytes!(b"Hello", b"world", int_bytes!(1));
+    const RES5: &[u8] = concat_const::concat_bytes!(HELLO, b"world", int_bytes!(NUM));
     assert_eq!(RES5, b"Helloworld1");
 
     const RES6: &[u8] =
-        concat_const::concat_bytes!(b"Hello", b"world", int_bytes!(-54), int_bytes!(32),);
-    assert_eq!(RES6, b"Helloworld-5432");
+        concat_const::concat_bytes!(HELLO, b"world", int_bytes!(-54), int_bytes!(NUM),);
+    assert_eq!(RES6, b"Helloworld-541");
 }
 
 #[test]
 fn test_str() {
     const HELLO: &str = "Hello";
+    const NUM: i128 = 1;
 
     const RES1: &str = concat_const::concat!(HELLO, "world",); // trailing comma
     assert_eq!(RES1, "Helloworld");
@@ -56,14 +58,14 @@ fn test_str() {
     const RES3: &str = concat_const::concat!(HELLO, ", ", "world", ".");
     assert_eq!(RES3, "Hello, world.");
 
-    const RES4: &str = concat_const::concat!("Hello", ", ", "world", ".", " ", "end");
+    const RES4: &str = concat_const::concat!(HELLO, ", ", "world", ".", " ", "end");
     assert_eq!(RES4, "Hello, world. end");
 
-    const RES5: &str = concat_const::concat!("Hello", "world", int!(1));
+    const RES5: &str = concat_const::concat!(HELLO, "world", int!(NUM));
     assert_eq!(RES5, "Helloworld1");
 
-    const RES6: &str = concat_const::concat!("Hello", "world", int!(-54), int!(32),);
-    assert_eq!(RES6, "Helloworld-5432");
+    const RES6: &str = concat_const::concat!(HELLO, "world", int!(-54), int!(NUM),);
+    assert_eq!(RES6, "Helloworld-541");
 }
 
 #[test]
