@@ -1,6 +1,9 @@
 #![no_std]
 
-#[inline]
+mod slices;
+
+pub use slices::*;
+
 pub const fn len_sum(to_concat: &[&[u8]]) -> usize {
     let mut len = 0;
     let mut i = 0;
@@ -11,7 +14,6 @@ pub const fn len_sum(to_concat: &[&[u8]]) -> usize {
     len
 }
 
-#[inline]
 pub const fn concat_bytes<const LEN: usize>(to_concat: &[&[u8]]) -> [u8; LEN] {
     let mut res: [u8; LEN] = [0; LEN];
     let mut shift = 0;
@@ -25,6 +27,9 @@ pub const fn concat_bytes<const LEN: usize>(to_concat: &[&[u8]]) -> [u8; LEN] {
         }
         shift += j;
         i += 1;
+    }
+    if shift != LEN {
+        panic!("Invalid length");
     }
     res
 }
@@ -52,7 +57,6 @@ macro_rules! concat {
     };
 }
 
-#[inline]
 pub const fn int_len(mut int: i128) -> usize {
     let mut len = 0;
     if int < 0 {
@@ -65,7 +69,6 @@ pub const fn int_len(mut int: i128) -> usize {
     len
 }
 
-#[inline]
 pub const fn int_to_bytes<const LEN: usize>(mut int: i128) -> [u8; LEN] {
     let mut res: [u8; LEN] = [0; LEN];
     let mut i = LEN - 1;
@@ -107,7 +110,6 @@ macro_rules! int {
     }};
 }
 
-#[inline]
 pub const fn eq_bytes(left: &[u8], right: &[u8]) -> bool {
     if left.len() != right.len() {
         return false;
