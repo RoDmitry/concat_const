@@ -36,13 +36,12 @@ macro_rules! _concat_slices {
 pub const unsafe fn concat_slices<const LEN: usize, T: Unpin + 'static>(
     slices: &'static [&'static [T]],
 ) -> [T; LEN] {
-    #[allow(clippy::uninit_assumed_init)]
-    let mut arr: [T; LEN] = unsafe { MaybeUninit::<[T; LEN]>::uninit().assume_init() };
+    let mut arr: [MaybeUninit<T>; LEN] = unsafe { MaybeUninit::uninit().assume_init() };
     let mut shift = 0;
     let mut i = 0;
     while i < slices.len() {
         let slice = slices[i];
-        let src_ptr = slice.as_ptr();
+        let src_ptr = slice.as_ptr() as *const MaybeUninit<T>;
         let dst_ptr = &mut arr[shift];
 
         // Copy the bytes
@@ -54,5 +53,8 @@ pub const unsafe fn concat_slices<const LEN: usize, T: Unpin + 'static>(
     if shift != LEN {
         panic!("Invalid length");
     }
-    arr
+    // code copied from `arr.transpose().assume_init()`
+    unsafe { (&raw const arr).cast::<[T; LEN]>().read() }
+    // replace with (once stable):
+    // unsafe { MaybeUninit::array_assume_init(arr) }
 }
